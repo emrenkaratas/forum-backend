@@ -1,0 +1,15 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Build
+/target/
+
+# Logs
+*.log
+
+# System
+.DS_Store
+
+# Maven
+dependency-reduced-pom.xml
