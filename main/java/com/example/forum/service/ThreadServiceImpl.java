@@ -1,4 +1,3 @@
-// src/main/java/com/example/forum/service/impl/ThreadServiceImpl.java
 package com.example.forum.service;
 
 import com.example.forum.dto.ThreadRequest;

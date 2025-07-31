@@ -1,4 +1,3 @@
-// src/main/java/com/example/forum/model/Comment.java
 package com.example.forum.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
