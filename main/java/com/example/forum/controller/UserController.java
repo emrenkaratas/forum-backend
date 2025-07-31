@@ -1,7 +1,7 @@
 package com.example.forum.controller;
 
 import com.example.forum.model.User;
-import com.example.forum.repository.UserRepository;
+import com.example.forum.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,34 +12,38 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
+
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+        return userService.createUser(user);
     }
+
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userService.getUserById(id);
     }
 
+
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        return userRepository.findById(id).map(user -> {
-            user.setUsername(updatedUser.getUsername());
-            user.setPassword(updatedUser.getPassword());
-            return userRepository.save(user);
-        }).orElse(null);
+    public User updateUser(
+            @PathVariable Long id,
+            @RequestBody User updatedUser
+    ) {
+        return userService.updateUser(id, updatedUser);
     }
+
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
     }
 }
