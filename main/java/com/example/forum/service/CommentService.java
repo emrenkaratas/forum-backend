@@ -1,13 +1,14 @@
 package com.example.forum.service;
 
 import com.example.forum.dto.CommentRequest;
-import com.example.forum.model.Comment;
+import com.example.forum.dto.CommentResponse;
 
 import java.util.List;
 
 public interface CommentService {
-    Comment createComment(CommentRequest req);
-    List<Comment> getAllComments();
-    List<Comment> getCommentsByThread(Long threadId);
-    Comment updateComment(Long commentId, CommentRequest req);
+    CommentResponse createComment(CommentRequest req);
+    List<CommentResponse> getAllComments();
+    List<CommentResponse> getCommentsByThread(Long threadId);
+    CommentResponse updateComment(Long commentId, CommentRequest req);
+    void deleteComment(Long commentId);
 }

@@ -1,82 +1,83 @@
 package com.example.forum.service;
 
 import com.example.forum.dto.ThreadRequest;
+import com.example.forum.dto.ThreadResponse;
+import com.example.forum.dto.ThreadResponse.CommentSummary;
 import com.example.forum.model.Thread;
 import com.example.forum.model.User;
 import com.example.forum.repository.ThreadRepository;
 import com.example.forum.repository.UserRepository;
 import com.example.forum.service.ThreadService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ThreadServiceImpl implements ThreadService {
 
-    @Autowired
-    private ThreadRepository threadRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final ThreadRepository threadRepository;
+    private final UserRepository   userRepository;
 
     @Override
-    public Thread createThread(ThreadRequest req) {
-        User user = userRepository.findById(req.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "User not found"));
-
-        User insertedBy = userRepository.findById(req.getInsertedById())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "InsertedBy user not found"));
-
-        User updatedBy = null;
-        if (req.getUpdatedById() != null) {
-            updatedBy = userRepository.findById(req.getUpdatedById())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST, "UpdatedBy user not found"));
-        }
+    public ThreadResponse createThread(ThreadRequest req) {
+        User author = userRepository.findById(req.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
+        User insBy = userRepository.findById(req.getInsertedById())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "InsertedBy not found"));
+        User updBy = req.getUpdatedById() == null
+                ? null
+                : userRepository.findById(req.getUpdatedById())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "UpdatedBy not found"));
 
         Thread thread = new Thread();
         thread.setTitle(req.getTitle());
         thread.setContent(req.getContent());
-        thread.setUser(user);
-        thread.setInsertedBy(insertedBy);
-        thread.setUpdatedBy(updatedBy);
+        thread.setUser(author);
+        thread.setInsertedBy(insBy);
+        thread.setUpdatedBy(updBy);
 
-        return threadRepository.save(thread);
+
+        Thread saved = threadRepository.save(thread);
+        return mapToDto(saved);
     }
 
     @Override
-    public List<Thread> getAllThreads() {
-        return threadRepository.findAll();
+    public List<ThreadResponse> getAllThreads() {
+        return threadRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Thread getThreadById(Long id) {
-        Thread t = threadRepository.findById(id)
+    public ThreadResponse getThreadById(Long id) {
+        Thread thread = threadRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thread not found"));
-        // increment viewCount on each fetch
-        t.incrementViewCount();
-        return threadRepository.save(t);
+
+        thread.incrementViewCount();
+        threadRepository.save(thread);
+        return mapToDto(thread);
     }
 
     @Override
-    public Thread updateThread(Long id, ThreadRequest req) {
+    public ThreadResponse updateThread(Long id, ThreadRequest req) {
         Thread existing = threadRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thread not found"));
 
         existing.setTitle(req.getTitle());
         existing.setContent(req.getContent());
-
         if (req.getUpdatedById() != null) {
             User updBy = userRepository.findById(req.getUpdatedById())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "UpdatedBy not found"));
             existing.setUpdatedBy(updBy);
         }
-        return threadRepository.save(existing);
+
+        Thread saved = threadRepository.save(existing);
+        return mapToDto(saved);
     }
 
     @Override
@@ -85,5 +86,29 @@ public class ThreadServiceImpl implements ThreadService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Thread not found");
         }
         threadRepository.deleteById(id);
+    }
+
+    private ThreadResponse mapToDto(Thread t) {
+        ThreadResponse dto = new ThreadResponse();
+        dto.setId(t.getId());
+        dto.setTitle(t.getTitle());
+        dto.setContent(t.getContent());
+        dto.setCreatedAt(t.getCreatedAt());
+        dto.setUpdatedAt(t.getUpdatedAt());
+        dto.setViewCount(t.getViewCount());
+        dto.setUserId(t.getUser().getId());
+        dto.setInsertedById(t.getInsertedBy() != null ? t.getInsertedBy().getId() : null);
+        dto.setUpdatedById(t.getUpdatedBy() != null ? t.getUpdatedBy().getId() : null);
+        dto.setComments(
+                t.getComments().stream().map(c -> {
+                    CommentSummary cs = new CommentSummary();
+                    cs.setId(c.getId());
+                    cs.setContent(c.getContent());
+                    cs.setCreatedAt(c.getCreatedAt());
+                    cs.setUserId(c.getUser().getId());
+                    return cs;
+                }).collect(Collectors.toList())
+        );
+        return dto;
     }
 }

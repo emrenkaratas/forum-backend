@@ -1,9 +1,9 @@
 package com.example.forum.controller;
 
 import com.example.forum.dto.CommentRequest;
-import com.example.forum.model.Comment;
+import com.example.forum.dto.CommentResponse;
 import com.example.forum.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,39 +12,46 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
+@RequiredArgsConstructor
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
 
-    /** Create a new comment */
+
     @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody CommentRequest req) {
-        Comment created = commentService.createComment(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentRequest req) {
+        CommentResponse created = commentService.createComment(req);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(created);
     }
 
 
     @GetMapping
-    public List<Comment> getAllComments() {
+    public List<CommentResponse> getAllComments() {
         return commentService.getAllComments();
     }
 
 
     @GetMapping("/thread/{threadId}")
-    public List<Comment> getCommentsByThread(@PathVariable Long threadId) {
+    public List<CommentResponse> getCommentsByThread(@PathVariable Long threadId) {
         return commentService.getCommentsByThread(threadId);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Comment> updateComment(
+    public CommentResponse updateComment(
             @PathVariable Long id,
             @RequestBody CommentRequest req
     ) {
-        Comment updated = commentService.updateComment(id, req);
-        return ResponseEntity.ok(updated);
+        return commentService.updateComment(id, req);
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+

@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        // Here you could hash passwords or enforce business rules before saving
+
         return userRepository.save(user);
     }
 
