@@ -14,9 +14,7 @@ import java.util.List;
 @RequestMapping("/threads")
 public class ThreadController {
 
-    @Autowired
-    private ThreadService threadService;
-
+    @Autowired private ThreadService threadService;
 
     @PostMapping
     public ResponseEntity<Thread> createThread(@RequestBody ThreadRequest req) {
@@ -24,19 +22,25 @@ public class ThreadController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-
     @GetMapping
     public List<Thread> getAllThreads() {
         return threadService.getAllThreads();
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Thread> getThreadById(@PathVariable Long id) {
-        Thread thread = threadService.getThreadById(id);
-        return ResponseEntity.ok(thread);
+        Thread t = threadService.getThreadById(id);
+        return ResponseEntity.ok(t);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Thread> updateThread(
+            @PathVariable Long id,
+            @RequestBody ThreadRequest req
+    ) {
+        Thread updated = threadService.updateThread(id, req);
+        return ResponseEntity.ok(updated);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteThread(@PathVariable Long id) {

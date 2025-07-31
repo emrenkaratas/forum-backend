@@ -16,6 +16,9 @@ public class Thread {
     private String title;
     private String content;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    private int viewCount;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -34,17 +37,26 @@ public class Thread {
 
     public Thread() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+        this.viewCount = 0;
     }
 
-    public Thread(String title, String content, User user, User insertedBy, User updatedBy) {
+    public Thread(String title,
+                  String content,
+                  User user,
+                  User insertedBy,
+                  User updatedBy) {
         this.title = title;
         this.content = content;
         this.user = user;
         this.insertedBy = insertedBy;
         this.updatedBy = updatedBy;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+        this.viewCount = 0;
     }
 
+    // --- Getters & Setters ---
 
     public Long getId() {
         return id;
@@ -58,6 +70,7 @@ public class Thread {
     }
     public void setTitle(String title) {
         this.title = title;
+        touchUpdatedAt();
     }
 
     public String getContent() {
@@ -65,6 +78,7 @@ public class Thread {
     }
     public void setContent(String content) {
         this.content = content;
+        touchUpdatedAt();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -72,6 +86,23 @@ public class Thread {
     }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 
     public User getUser() {
@@ -93,6 +124,7 @@ public class Thread {
     }
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
+        touchUpdatedAt();
     }
 
     public List<Comment> getComments() {
@@ -100,5 +132,9 @@ public class Thread {
     }
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    private void touchUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

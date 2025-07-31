@@ -9,5 +9,6 @@ public interface ThreadService {
     Thread createThread(ThreadRequest req);
     List<Thread> getAllThreads();
     Thread getThreadById(Long id);
+    Thread updateThread(Long id, ThreadRequest req);
     void deleteThread(Long id);
 }

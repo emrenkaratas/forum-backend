@@ -9,4 +9,5 @@ public interface CommentService {
     Comment createComment(CommentRequest req);
     List<Comment> getAllComments();
     List<Comment> getCommentsByThread(Long threadId);
+    Comment updateComment(Long commentId, CommentRequest req);
 }

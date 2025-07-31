@@ -17,7 +17,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-
+    /** Create a new comment */
     @PostMapping
     public ResponseEntity<Comment> createComment(@RequestBody CommentRequest req) {
         Comment created = commentService.createComment(req);
@@ -35,4 +35,16 @@ public class CommentController {
     public List<Comment> getCommentsByThread(@PathVariable Long threadId) {
         return commentService.getCommentsByThread(threadId);
     }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Comment> updateComment(
+            @PathVariable Long id,
+            @RequestBody CommentRequest req
+    ) {
+        Comment updated = commentService.updateComment(id, req);
+        return ResponseEntity.ok(updated);
+    }
+
+
 }

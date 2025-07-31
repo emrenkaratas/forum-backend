@@ -15,6 +15,8 @@ public class Comment {
 
     private String content;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "thread_id", nullable = false)
@@ -35,35 +37,82 @@ public class Comment {
 
     public Comment() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
-    public Comment(String content, Thread thread, User user, User insertedBy) {
+    public Comment(String content,
+                   Thread thread,
+                   User user,
+                   User insertedBy) {
         this.content = content;
         this.thread = thread;
         this.user = user;
         this.insertedBy = insertedBy;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
-    // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getContent() {
+        return content;
+    }
+    public void setContent(String content) {
+        this.content = content;
+        touchUpdatedAt();
+    }
 
-    public Thread getThread() { return thread; }
-    public void setThread(Thread thread) { this.thread = thread; }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
-    public User getInsertedBy() { return insertedBy; }
-    public void setInsertedBy(User insertedBy) { this.insertedBy = insertedBy; }
+    public Thread getThread() {
+        return thread;
+    }
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
 
-    public User getUpdatedBy() { return updatedBy; }
-    public void setUpdatedBy(User updatedBy) { this.updatedBy = updatedBy; }
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getInsertedBy() {
+        return insertedBy;
+    }
+    public void setInsertedBy(User insertedBy) {
+        this.insertedBy = insertedBy;
+    }
+
+    public User getUpdatedBy() {
+        return updatedBy;
+    }
+    public void setUpdatedBy(User updatedBy) {
+        this.updatedBy = updatedBy;
+        touchUpdatedAt();
+    }
+
+    // internal helper to update timestamp
+    private void touchUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

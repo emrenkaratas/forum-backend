@@ -55,6 +55,24 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Comment updateComment(Long id, CommentRequest req) {
+        Comment existing = commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Comment not found"));
+
+
+        existing.setContent(req.getContent());
+        if (req.getUpdatedById() != null) {
+            User upd = userRepository.findById(req.getUpdatedById())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST, "UpdatedBy user not found"));
+            existing.setUpdatedBy(upd);
+        }
+
+        return commentRepository.save(existing);
+    }
+
+    @Override
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }

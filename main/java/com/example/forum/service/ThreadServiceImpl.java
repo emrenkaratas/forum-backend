@@ -57,9 +57,27 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public Thread getThreadById(Long id) {
-        return threadRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Thread not found"));
+        Thread t = threadRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thread not found"));
+        // increment viewCount on each fetch
+        t.incrementViewCount();
+        return threadRepository.save(t);
+    }
+
+    @Override
+    public Thread updateThread(Long id, ThreadRequest req) {
+        Thread existing = threadRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thread not found"));
+
+        existing.setTitle(req.getTitle());
+        existing.setContent(req.getContent());
+
+        if (req.getUpdatedById() != null) {
+            User updBy = userRepository.findById(req.getUpdatedById())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "UpdatedBy not found"));
+            existing.setUpdatedBy(updBy);
+        }
+        return threadRepository.save(existing);
     }
 
     @Override
