@@ -1,14 +1,22 @@
 package com.example.forum.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public abstract class BaseEntity {
 
     @Id

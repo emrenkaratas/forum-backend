@@ -3,7 +3,7 @@ package com.example.forum.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
-
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Entity
@@ -12,7 +12,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+
 public class User extends BaseEntity {
     private String username;
     private String password;
