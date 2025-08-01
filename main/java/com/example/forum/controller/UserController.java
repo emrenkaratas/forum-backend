@@ -1,49 +1,46 @@
 package com.example.forum.controller;
 
+import com.example.forum.dto.UserRequest;
 import com.example.forum.model.User;
 import com.example.forum.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<List<User>> listAll() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> fetchOne(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
 
     @PutMapping("/{id}")
-    public User updateUser(
+    public ResponseEntity<User> update(
             @PathVariable Long id,
-            @RequestBody User updatedUser
+            @RequestBody UserRequest req
     ) {
-        return userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(userService.updateUser(id, req));
     }
 
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

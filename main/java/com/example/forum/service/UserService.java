@@ -1,13 +1,17 @@
 package com.example.forum.service;
 
+import com.example.forum.dto.LoginRequest;
+import com.example.forum.dto.LoginResponse;
+import com.example.forum.dto.UserRequest;
 import com.example.forum.model.User;
 
 import java.util.List;
 
 public interface UserService {
     List<User> getAllUsers();
-    User createUser(User user);
     User getUserById(Long id);
-    User updateUser(Long id, User updatedUser);
+    User register(UserRequest req);
+    LoginResponse login(LoginRequest req);
+    User updateUser(Long id, UserRequest req);
     void deleteUser(Long id);
 }
